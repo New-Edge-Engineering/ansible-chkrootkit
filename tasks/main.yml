@@ -1,0 +1,41 @@
+---
+- name: ensure chkrootkit is at the latest version
+  apt: pkg=chkrootkit state=latest
+  tags:
+    - chkrootkit
+    - packages
+
+- name: ensuring daily chkrootkit report is schedule with cron
+  cron:
+    name="chkrootkit report"
+    minute="0"
+    hour="0"
+    job="chkrootkit > /var/log/chkrootkit.log 2>&1"
+  tags:
+    - chkrootkit
+    - cron
+
+- name: ensure chkrootkit logrotation configuration is in place
+  copy:
+    dest=/etc/logrotate.d/chkrootkit
+    src=logrotate-chkrootkit.conf
+    owner=root
+    group=root
+    mode=644
+  tags:
+    - chkrootkit
+    - log
+
+- name: ensure chkrootkit cron logrotation configuration is in place
+  copy:
+    dest=/etc/logrotate.d/chkrootkit-cron
+    src=logrotate-chkrootkit-cron.conf
+    owner=root
+    group=root
+    mode=644
+  tags:
+    - chkrootkit
+    - log
+
+# REFERENCES:
+# Ubuntu step 14 hardening from http://www.thefanclub.co.za/how-to/how-secure-ubuntu-1204-lts-server-part-1-basics
